@@ -5,26 +5,6 @@ import Movie from './Movie';
 class App extends Component {
 
   state = {
-    greeting : 'hello',
-    movies : [
-      {
-        title:"Matrix",
-        poster:"https://images-na.ssl-images-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SY1000_CR0,0,665,1000_AL_.jpg"
-      },
-      {
-        title:"Full Metal Jacket",
-        poster:"https://images-na.ssl-images-amazon.com/images/M/MV5BNzc2ZThkOGItZGY5YS00MDYwLTkyOTAtNDRmZWIwMGRhYTc0L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SY1000_CR0,0,656,1000_AL_.jpg"
-
-      },
-      {
-        title:"Oldboy",
-        poster:"https://images-na.ssl-images-amazon.com/images/M/MV5BMTI3NTQyMzU5M15BMl5BanBnXkFtZTcwMTM2MjgyMQ@@._V1_.jpg",
-      },
-      {
-        title:"Star Wars",
-        poster:"https://blog.rebelpilgrim.com/wp-content/uploads/2017/10/7773769005_star-wars.jpg"
-      }
-    ]
   }
 
   // Render : componentWillMount() -> render() -> componentDidMount()
@@ -35,28 +15,29 @@ class App extends Component {
   }
 
   componentDidMount(){
-    setTimeout(()=>{
-      this.setState({
-        movies:[
-          ...this.state.movies,
-          {
-            title: "Transformer",
-            poster: "https://upload.wikimedia.org/wikipedia/ko/e/e4/%ED%8A%B8%EB%9E%9C%EC%8A%A4%ED%8F%AC%EB%A8%B8_%EC%98%81%ED%99%94.jpg"
-          }
-        ]
-      })
-    },5000)
+    fetch('https://yts.am/api/v2/list_movies.json?sort_by=rating')
+    .then(response => response.json())
+    .then(json => console.log(json))
+    .catch(err => console.log(err)) // catching errors
   //  console.log('3. did mount');
+  }
+
+  _renderMovies = () =>{
+    const movies = this.state.movies.map((movie, index) =>{
+      return <Movie title ={movie.title} poster = {movie.poster} key = {index}/>
+    })
+    return movies
+  }
+
+  _loading = () =>{
+  return  <img src="http://i.giftrunk.com/44frgm.gif"  alt="Loading"/>
   }
 
   render() {
   //  console.log('2. did render');
     return (
       <div className="App">
-        {this.state.greeting}
-        {this.state.movies.map((movie, index) =>{
-          return <Movie title ={movie.title} poster = {movie.poster} key = {index}/>
-        })}
+        {this.state.movies ? this._renderMovies() : this._loading()}
       </div>
     )
   }
